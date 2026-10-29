@@ -6,8 +6,8 @@ description: Lightweight, low-overhead NPCs for high-density population.
 
 commands:
   noema:
-    description: Reload the Noema plugin
-    usage: /noema reload
+    description: Noema admin command
+    usage: /noema <reload|place|remove>
     permission: noema.admin
 
 permissions:

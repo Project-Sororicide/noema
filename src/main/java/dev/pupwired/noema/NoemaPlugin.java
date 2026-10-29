@@ -3,6 +3,7 @@ package dev.pupwired.noema;
 import dev.pupwired.noema.behaviour.LookTask;
 import dev.pupwired.noema.behaviour.NpcListener;
 import dev.pupwired.noema.behaviour.PassiveMessageTask;
+import dev.pupwired.noema.command.NoemaCommand;
 import dev.pupwired.noema.config.NpcConfig;
 import dev.pupwired.noema.config.NpcType;
 import dev.pupwired.noema.spawn.NpcSpawner;
@@ -44,6 +45,11 @@ public class NoemaPlugin extends JavaPlugin {
         getServer().getScheduler().runTaskTimer(this, passiveTask, 40L, 20L);
         getServer().getScheduler().runTaskTimer(this, lookTask, 40L, 5L);
 
+        // Commands
+        NoemaCommand noemaCommand = new NoemaCommand(this);
+        getCommand("noema").setExecutor(noemaCommand);
+        getCommand("noema").setTabCompleter(noemaCommand);
+
         // End
         getLogger().info("Loaded " + config.types().size() + " NPC types.");
     }
@@ -53,21 +59,9 @@ public class NoemaPlugin extends JavaPlugin {
         if (spawner != null) spawner.shutdown();
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-            if (!sender.hasPermission("noema.admin")) {
-                sender.sendMessage("You don't have permission.");
-                return true;
-            }
-            // Live NPCs only store the type id, so swapping the snapshot updates them all.
-            config = NpcConfig.load(this);
-            spawner.reload();
-            sender.sendMessage("Reloaded " + config.types().size() + " NPC types.");
-            return true;
-        }
-        sender.sendMessage("Usage: /" + label + " reload");
-        return true;
+    public void reload() {
+        config = NpcConfig.load(this);
+        spawner.reload();
     }
 
     // TODO: Spawner Logic
@@ -93,4 +87,6 @@ public class NoemaPlugin extends JavaPlugin {
     public NpcRegistry registry() { return registry; }
 
     public PassiveMessageTask passiveTask() { return passiveTask; }
+
+    public NpcSpawner spawner() { return spawner; }
 }

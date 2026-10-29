@@ -17,9 +17,9 @@ import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -51,7 +51,7 @@ public final class NpcSpawner implements Listener {
         Bukkit.getScheduler().runTask(plugin, this::scanLoadedChunks);
     }
 
-    /** Re-read placements and respawn everything (used by /npcs reload). */
+    /** Re-read placements and respawn everything (used by /noema reload). */
     public void reload() {
         despawnAll();
         warnedTypes.clear();
@@ -62,6 +62,57 @@ public final class NpcSpawner implements Listener {
 
     public void shutdown() {
         despawnAll();
+    }
+
+    // ------------------------------------------------------------------
+    // Placement management (used by /npcs place and /npcs remove)
+    // ------------------------------------------------------------------
+
+    public boolean hasPlacement(String id) {
+        return index.has(id);
+    }
+
+    public Collection<String> placementIds() {
+        return index.ids();
+    }
+
+    public int placementCount() {
+        return index.size();
+    }
+
+    /** First unused "<type>_<n>" id. */
+    public String nextId(String typeId) {
+        int n = 1;
+        while (index.has(typeId + "_" + n)) n++;
+        return typeId + "_" + n;
+    }
+
+    /** Saves the placement, adds it to the index and spawns it right away if its chunk is loaded. */
+    public boolean addPlacement(Placement p) {
+        if (index.has(p.id())) return false;
+        if (!PlacementIndex.writeEntry(plugin, p)) return false;
+        index.add(p);
+
+        World world = Bukkit.getWorld(p.worldName());
+        if (world != null) {
+            spawnChunk(world, (int) p.chunkKey(), (int) (p.chunkKey() >>> 32));
+        }
+        return true;
+    }
+
+    /** Removes the placement from the file and index and despawns its NPC if it exists. */
+    public boolean removePlacement(String id) {
+        if (!index.has(id)) return false;
+        if (!PlacementIndex.deleteEntry(plugin, id)) return false;
+        index.remove(id);
+
+        UUID uuid = spawned.remove(id);
+        if (uuid != null) {
+            plugin.registry().remove(uuid);
+            Entity ent = Bukkit.getEntity(uuid);
+            if (ent != null) ent.remove();
+        }
+        return true;
     }
 
     // ------------------------------------------------------------------
