@@ -1,6 +1,9 @@
-package dev.pupwired.noema;
+package dev.pupwired.noema.behaviour;
 
-import dev.pupwired.noema.NpcType.Interact;
+import dev.pupwired.noema.NoemaPlugin;
+import dev.pupwired.noema.config.NpcType;
+import dev.pupwired.noema.config.NpcType.Interact;
+import dev.pupwired.noema.api.NpcInteractEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

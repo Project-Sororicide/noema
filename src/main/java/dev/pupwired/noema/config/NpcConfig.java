@@ -1,12 +1,12 @@
-package dev.pupwired.noema;
+package dev.pupwired.noema.config;
 
-import dev.pupwired.noema.NpcType.Interact;
-import dev.pupwired.noema.NpcType.Line;
-import dev.pupwired.noema.NpcType.Lines;
-import dev.pupwired.noema.NpcType.Passive;
-import dev.pupwired.noema.NpcType.RunAs;
-import dev.pupwired.noema.NpcType.Skin;
-import dev.pupwired.noema.NpcType.Look;
+import dev.pupwired.noema.config.NpcType.Interact;
+import dev.pupwired.noema.config.NpcType.Line;
+import dev.pupwired.noema.config.NpcType.Lines;
+import dev.pupwired.noema.config.NpcType.Passive;
+import dev.pupwired.noema.config.NpcType.RunAs;
+import dev.pupwired.noema.config.NpcType.Skin;
+import dev.pupwired.noema.config.NpcType.Look;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.ConfigurationSection;

@@ -1,4 +1,4 @@
-package dev.pupwired.noema;
+package dev.pupwired.noema.api;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

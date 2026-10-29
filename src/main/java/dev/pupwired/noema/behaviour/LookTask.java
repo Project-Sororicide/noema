@@ -1,6 +1,10 @@
-package dev.pupwired.noema;
+package dev.pupwired.noema.behaviour;
 
+import dev.pupwired.noema.NoemaPlugin;
+import dev.pupwired.noema.NpcRegistry;
 import dev.pupwired.noema.NpcRegistry.Entry;
+import dev.pupwired.noema.config.NpcConfig;
+import dev.pupwired.noema.config.NpcType;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;

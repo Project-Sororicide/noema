@@ -1,4 +1,4 @@
-package dev.pupwired.noema;
+package dev.pupwired.noema.config;
 
 import net.kyori.adventure.text.Component;
 

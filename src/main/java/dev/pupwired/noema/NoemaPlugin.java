@@ -1,5 +1,10 @@
 package dev.pupwired.noema;
 
+import dev.pupwired.noema.behaviour.LookTask;
+import dev.pupwired.noema.behaviour.NpcListener;
+import dev.pupwired.noema.behaviour.PassiveMessageTask;
+import dev.pupwired.noema.config.NpcConfig;
+import dev.pupwired.noema.config.NpcType;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
