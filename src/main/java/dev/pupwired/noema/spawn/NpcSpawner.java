@@ -12,6 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityRemoveEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
@@ -30,6 +31,8 @@ import java.util.logging.Level;
  * Main thread only.
  */
 public final class NpcSpawner implements Listener {
+
+    private static final long RESPAWN_DELAY_TICKS = 100; // 5 seconds
 
     private final NoemaPlugin plugin;
     private final NamespacedKey placementKey;
@@ -158,6 +161,22 @@ public final class NpcSpawner implements Listener {
         }
     }
 
+    @EventHandler
+    public void onEntityRemove(EntityRemoveEvent e) {
+        // Chunk unloads are handled by the unload listeners.
+        if (e.getCause() == EntityRemoveEvent.Cause.UNLOAD) return;
+
+        Entity ent = e.getEntity();
+        if (!plugin.registry().contains(ent.getUniqueId())) return; // not a tracked NPC, or removed by us
+
+        String pid = ent.getPersistentDataContainer().get(placementKey, PersistentDataType.STRING);
+        plugin.registry().remove(ent.getUniqueId());
+        if (pid == null) return;
+
+        spawned.remove(pid, ent.getUniqueId());
+        Bukkit.getScheduler().runTaskLater(plugin, () -> respawn(pid), RESPAWN_DELAY_TICKS);
+    }
+
     // ------------------------------------------------------------------
     // Spawning
     // ------------------------------------------------------------------
@@ -203,6 +222,15 @@ public final class NpcSpawner implements Listener {
         npc.getPersistentDataContainer().set(placementKey, PersistentDataType.STRING, p.id());
         plugin.track(npc, type.id());
         spawned.put(p.id(), npc.getUniqueId());
+    }
+
+    private void respawn(String id) {
+        Placement p = index.get(id);
+        if (p == null || spawned.containsKey(id)) return; // placement removed, or already back
+
+        World world = Bukkit.getWorld(p.worldName());
+        if (world == null) return;
+        spawnChunk(world, (int) p.chunkKey(), (int) (p.chunkKey() >>> 32));
     }
 
     private void despawnAll() {

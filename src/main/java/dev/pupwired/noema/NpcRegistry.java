@@ -43,6 +43,15 @@ public final class NpcRegistry {
         return byEntity.get(entityId);
     }
 
+    public boolean contains(UUID entityId) {
+        return byEntity.containsKey(entityId);
+    }
+
+    public String typeOf(UUID entityId) {
+        Entry entry = byEntity.get(entityId);
+        return entry == null ? null : entry.typeId();
+    }
+
     public void remove(UUID entityId) {
         Entry entry = byEntity.remove(entityId);
         if (entry == null) return;

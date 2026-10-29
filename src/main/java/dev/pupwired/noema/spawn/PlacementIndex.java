@@ -91,6 +91,10 @@ public final class PlacementIndex {
         return p;
     }
 
+    public Placement get(String id) {
+        return byId.get(id);
+    }
+
     public boolean has(String id) {
         return byId.containsKey(id);
     }

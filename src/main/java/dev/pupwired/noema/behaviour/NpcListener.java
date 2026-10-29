@@ -8,7 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -73,6 +75,22 @@ public final class NpcListener implements Listener {
                         cmd);
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onDamage(EntityDamageEvent e) {
+        String typeId = plugin.registry().typeOf(e.getEntity().getUniqueId());
+        if (typeId == null) return;
+
+        NpcType type = plugin.config().types().get(typeId);
+        if (type == null || !type.invulnerable()) return;
+
+        // Let admins /kill an NPC and let the void remove one that falls out of the world.
+        EntityDamageEvent.DamageCause cause = e.getCause();
+        if (cause == EntityDamageEvent.DamageCause.KILL
+                || cause == EntityDamageEvent.DamageCause.VOID) return;
+
+        e.setCancelled(true);
     }
 
     @EventHandler
