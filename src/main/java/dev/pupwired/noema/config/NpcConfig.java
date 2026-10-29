@@ -58,7 +58,8 @@ public record NpcConfig(Map<String, NpcType> types, int passiveChunkRadius, int 
                 if (s == null) continue;
 
                 Component name = MM.deserialize(s.getString("name", id));
-                Component description = MM.deserialize(s.getString("description", ""));
+                var desc = s.getString("description");
+                Component description = desc != null ? MM.deserialize(desc) : null;
 
                 String skinId = s.getString("skin");
                 Skin skin = null;
