@@ -1,6 +1,7 @@
 package dev.pupwired.noema.command;
 
 import dev.pupwired.noema.NoemaPlugin;
+import dev.pupwired.noema.message.NoemaMsg;
 import dev.pupwired.noema.spawn.NpcSpawner;
 import dev.pupwired.noema.spawn.Placement;
 import net.kyori.adventure.text.Component;
@@ -59,24 +60,22 @@ public class NoemaCommand implements CommandExecutor, TabCompleter {
 
     private void reload(CommandSender sender) {
         plugin.reload();
-        reply(sender, NamedTextColor.GREEN, "Reloaded " + plugin.config().types().size()
-                + " NPC types and " + plugin.spawner().placementCount() + " placements.");
+        NoemaMsg.COMMAND_RELOADED.sendMessage(sender, plugin.config().types().size(), plugin.spawner().placementCount());
     }
 
     private void place(CommandSender sender, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            reply(sender, NamedTextColor.RED, "Only players can place NPCs.");
+            NoemaMsg.COMMAND_NPCPLACE_NOT_PLAYER.sendMessage(sender);
             return;
         }
         if (args.length < 2 || args.length > 3) {
-            reply(sender, NamedTextColor.YELLOW, "Usage: /" + label + " place <type> [id]");
+            NoemaMsg.COMMAND_NPCPLACE_USAGE.sendMessage(sender, label);
             return;
         }
 
         String typeId = args[1];
         if (!plugin.config().types().containsKey(typeId)) {
-            reply(sender, NamedTextColor.RED, "Unknown type '" + typeId + "'. Types: "
-                    + String.join(", ", new TreeSet<>(plugin.config().types().keySet())));
+            NoemaMsg.COMMAND_NPCPLACE_UNKNOWN_TYPE.sendMessage(sender, typeId, String.join(", ", new TreeSet<>(plugin.config().types().keySet())));
             return;
         }
 
@@ -86,12 +85,11 @@ public class NoemaCommand implements CommandExecutor, TabCompleter {
                 : spawner.nextId(typeId.toLowerCase(Locale.ROOT));
 
         if (!ID.matcher(id).matches()) {
-            reply(sender, NamedTextColor.RED, "Ids may only use a-z, 0-9, '_' and '-' (max 40). "
-                    + "Pass an id explicitly: /" + label + " place " + typeId + " <id>");
+            NoemaMsg.COMMAND_NPCPLACE_ID_NAME_INVALID.sendMessage(sender, label, typeId);
             return;
         }
         if (spawner.hasPlacement(id)) {
-            reply(sender, NamedTextColor.RED, "A placement with id '" + id + "' already exists.");
+            NoemaMsg.COMMAND_NPCPLACE_ID_EXISTS.sendMessage(sender, id);
             return;
         }
 
@@ -101,27 +99,27 @@ public class NoemaCommand implements CommandExecutor, TabCompleter {
                 (float) round(loc.getYaw(), 1), 0f);
 
         if (!spawner.addPlacement(placement)) {
-            reply(sender, NamedTextColor.RED, "Couldn't save placements.yml, check the console.");
+            NoemaMsg.COMMAND_PLACEMENTS_SAVE_FAILED.sendMessage(sender);
             return;
         }
-        reply(sender, NamedTextColor.GREEN, "Placed '" + id + "' (" + typeId + ") at "
-                + placement.x() + ", " + placement.y() + ", " + placement.z() + ".");
+        NoemaMsg.COMMAND_NPCPLACE_SUCCESS.sendMessage(sender, id, typeId, placement.x(), placement.y(), placement.z());
     }
 
     private void remove(CommandSender sender, String label, String[] args) {
         if (args.length != 2) {
-            reply(sender, NamedTextColor.YELLOW, "Usage: /" + label + " remove <id>");
+            NoemaMsg.COMMAND_NPCREMOVE_USAGE.sendMessage(sender, label);
             return;
         }
         String id = args[1].toLowerCase(Locale.ROOT);
         NpcSpawner spawner = plugin.spawner();
 
         if (!spawner.hasPlacement(id)) {
-            reply(sender, NamedTextColor.RED, "No placement with id '" + id + "'.");
+            NoemaMsg.COMMAND_NPCREMOVE_NO_SUCH_ID.sendMessage(sender, id);
         } else if (!spawner.removePlacement(id)) {
-            reply(sender, NamedTextColor.RED, "Couldn't save placements.yml, check the console.");
+            NoemaMsg.COMMAND_PLACEMENTS_SAVE_FAILED.sendMessage(sender);
         } else {
-            reply(sender, NamedTextColor.GREEN, "Removed '" + id + "'.");
+            NoemaMsg.COMMAND_NPCREMOVE_SUCCESS.sendMessage(sender, id);
+
         }
     }
 
@@ -152,11 +150,7 @@ public class NoemaCommand implements CommandExecutor, TabCompleter {
     }
 
     private static void usage(CommandSender sender, String label) {
-        reply(sender, NamedTextColor.YELLOW, "Usage: /" + label + " <reload | place <type> [id] | remove <id>>");
-    }
-
-    private static void reply(CommandSender sender, NamedTextColor color, String text) {
-        sender.sendMessage(Component.text(text, color));
+        NoemaMsg.COMMAND_USAGE.sendMessage(sender, label);
     }
 
     private static double round(double v, int places) {

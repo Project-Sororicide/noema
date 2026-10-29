@@ -15,6 +15,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class NoemaPlugin extends JavaPlugin {
+    private static NoemaPlugin instance;
     private NamespacedKey typeKey;
     private final NpcRegistry registry = new NpcRegistry();
     private volatile NpcConfig config;
@@ -26,6 +27,7 @@ public class NoemaPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Common
+        instance = this;
         typeKey = new NamespacedKey(this, "npc_type");
         config = NpcConfig.load(this);
 
@@ -78,6 +80,10 @@ public class NoemaPlugin extends JavaPlugin {
     /** Stop tracking an NPC entity (call on despawn or chunk unload). */
     public void untrack(Entity entity) {
         registry.remove(entity.getUniqueId());
+    }
+
+    public static NoemaPlugin getInstance() {
+        return instance;
     }
 
     public NamespacedKey typeKey() { return typeKey; }
