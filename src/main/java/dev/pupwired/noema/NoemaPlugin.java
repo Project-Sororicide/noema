@@ -5,6 +5,7 @@ import dev.pupwired.noema.behaviour.NpcListener;
 import dev.pupwired.noema.behaviour.PassiveMessageTask;
 import dev.pupwired.noema.config.NpcConfig;
 import dev.pupwired.noema.config.NpcType;
+import dev.pupwired.noema.spawn.NpcSpawner;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,20 +19,38 @@ public class NoemaPlugin extends JavaPlugin {
     private volatile NpcConfig config;
     private PassiveMessageTask passiveTask;
     private LookTask lookTask;
+    private NpcSpawner spawner;
+    private NpcListener npcListener;
 
     @Override
     public void onEnable() {
+        // Common
         typeKey = new NamespacedKey(this, "npc_type");
         config = NpcConfig.load(this);
 
+        // Listeners
+        spawner = new NpcSpawner(this);
+        npcListener = new NpcListener(this);
+
+        getServer().getPluginManager().registerEvents(spawner, this);
+        getServer().getPluginManager().registerEvents(npcListener, this);
+
+        spawner.start();
+
+        // Tasks
         passiveTask = new PassiveMessageTask(this);
         lookTask = new LookTask(this);
 
-        getServer().getPluginManager().registerEvents(new NpcListener(this), this);
         getServer().getScheduler().runTaskTimer(this, passiveTask, 40L, 20L);
         getServer().getScheduler().runTaskTimer(this, lookTask, 40L, 5L);
 
+        // End
         getLogger().info("Loaded " + config.types().size() + " NPC types.");
+    }
+
+    @Override
+    public void onDisable() {
+        if (spawner != null) spawner.shutdown();
     }
 
     @Override
@@ -43,6 +62,7 @@ public class NoemaPlugin extends JavaPlugin {
             }
             // Live NPCs only store the type id, so swapping the snapshot updates them all.
             config = NpcConfig.load(this);
+            spawner.reload();
             sender.sendMessage("Reloaded " + config.types().size() + " NPC types.");
             return true;
         }
