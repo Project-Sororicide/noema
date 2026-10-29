@@ -1,0 +1,10 @@
+# Skin textures, referenced by id from npcs.yml.
+# value     = base64 texture property value
+# signature = optional; leave out or blank if you don't have one
+skins:
+  smith:
+    value: "REPLACE_WITH_BASE64_TEXTURE"
+    signature: "REPLACE_WITH_SIGNATURE"
+  quartermaster:
+    value: "REPLACE_WITH_BASE64_TEXTURE"
+    signature: "REPLACE_WITH_SIGNATURE"

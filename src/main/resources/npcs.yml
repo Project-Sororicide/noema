@@ -1,0 +1,39 @@
+# NPC type definitions. Placement/spawning is handled separately.
+# Placeholders in commands: %player%, %uuid%, %npc%
+# Placeholder in messages:  %player%
+# Text uses MiniMessage.
+defaults:
+  cooldown-ticks: 10
+  invulnerable: true
+  immovable: true
+
+types:
+  blacksmith:
+    name: "<gold>Brom the Smith"
+    skin: smith
+    on-interact:
+      event: "shop"              # exposed via NpcInteractEvent#getAction()
+      run-as: console            # console | player
+      commands:
+        - "shop open smith %player%"
+      messages:                  # one picked at random per interaction
+        - "<gold>Brom: <white>Mind the sparks, %player%."
+        - "<gold>Brom: <white>Fine steel, fair prices."
+        - "<gold>Brom: <white>Back again, are you?"
+    passive:
+      range: 6                   # blocks
+      interval-seconds: 45       # minimum gap per player, per NPC
+      messages:
+        - "<gold>Brom: <gray>*hammers away at an anvil*"
+        - "<gold>Brom: <white>Weapons repaired! Best in town!"
+
+  quartermaster:
+    name: "<green>Quartermaster"
+    skin: quartermaster
+    cooldown-ticks: 40
+    on-interact:
+      event: "quest"
+      commands:
+        - "quests start supply_run %player%"
+      messages:
+        - "<green>Quartermaster: <white>Got a job for you."
