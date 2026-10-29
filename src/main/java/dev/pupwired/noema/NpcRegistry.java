@@ -39,6 +39,10 @@ public final class NpcRegistry {
                 .add(entry);
     }
 
+    public Entry get(UUID entityId) {
+        return byEntity.get(entityId);
+    }
+
     public void remove(UUID entityId) {
         Entry entry = byEntity.remove(entityId);
         if (entry == null) return;

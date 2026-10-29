@@ -30,6 +30,8 @@ types:
   quartermaster:
     name: "<green>Quartermaster"
     skin: quartermaster
+    look:
+      range: 5
     cooldown-ticks: 40
     on-interact:
       event: "quest"

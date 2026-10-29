@@ -12,6 +12,7 @@ public class NoemaPlugin extends JavaPlugin {
     private final NpcRegistry registry = new NpcRegistry();
     private volatile NpcConfig config;
     private PassiveMessageTask passiveTask;
+    private LookTask lookTask;
 
     @Override
     public void onEnable() {
@@ -19,8 +20,11 @@ public class NoemaPlugin extends JavaPlugin {
         config = NpcConfig.load(this);
 
         passiveTask = new PassiveMessageTask(this);
+        lookTask = new LookTask(this);
+
         getServer().getPluginManager().registerEvents(new NpcListener(this), this);
         getServer().getScheduler().runTaskTimer(this, passiveTask, 40L, 20L);
+        getServer().getScheduler().runTaskTimer(this, lookTask, 40L, 5L);
 
         getLogger().info("Loaded " + config.types().size() + " NPC types.");
     }

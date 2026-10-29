@@ -17,7 +17,8 @@ public record NpcType(
         boolean invulnerable,
         boolean immovable,
         Interact interact,      // nullable
-        Passive passive         // nullable
+        Passive passive,        // nullable
+        Look look               // nullable
 ) {
 
     public record Skin(String value, String signature) {}
@@ -45,5 +46,7 @@ public record NpcType(
     public record Interact(String event, RunAs runAs, List<String> commands, Lines messages) {}
 
     public record Passive(double range, double rangeSq, long intervalMillis, Lines messages) {}
+
+    public record Look(double range, double rangeSq) {}
 }
 

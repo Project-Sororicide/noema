@@ -6,6 +6,7 @@ import dev.pupwired.noema.NpcType.Lines;
 import dev.pupwired.noema.NpcType.Passive;
 import dev.pupwired.noema.NpcType.RunAs;
 import dev.pupwired.noema.NpcType.Skin;
+import dev.pupwired.noema.NpcType.Look;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,7 +20,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /** Immutable snapshot of everything loaded from skins.yml + npcs.yml. */
-public record NpcConfig(Map<String, NpcType> types, int passiveChunkRadius) {
+public record NpcConfig(Map<String, NpcType> types, int passiveChunkRadius, int lookChunkRadius) {
 
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
@@ -49,6 +50,7 @@ public record NpcConfig(Map<String, NpcType> types, int passiveChunkRadius) {
         ConfigurationSection typesSec = npcsYml.getConfigurationSection("types");
         Map<String, NpcType> types = new HashMap<>();
         double maxPassiveRange = 0;
+        double maxLookRange = 0;
 
         if (typesSec != null) {
             for (String id : typesSec.getKeys(false)) {
@@ -92,13 +94,22 @@ public record NpcConfig(Map<String, NpcType> types, int passiveChunkRadius) {
                     }
                 }
 
+                Look look = null;
+                ConfigurationSection ls = s.getConfigurationSection("look");
+                if (ls != null) {
+                    double range = ls.getDouble("range", 5.0);
+                    look = new Look(range, range * range);
+                    maxLookRange = Math.max(maxLookRange, range);
+                }
+
                 types.put(id, new NpcType(id, name, skinId, skin, Math.max(0, cooldown),
-                        invulnerable, immovable, interact, passive));
+                        invulnerable, immovable, interact, passive, look));
             }
         }
 
         int chunkRadius = maxPassiveRange <= 0 ? 0 : (int) Math.ceil(maxPassiveRange / 16.0);
-        return new NpcConfig(Map.copyOf(types), chunkRadius);
+        int lookRadius = maxLookRange <= 0 ? -1 : (int) Math.ceil(maxLookRange / 16.0);
+        return new NpcConfig(Map.copyOf(types), chunkRadius, lookRadius);
     }
 
     private static YamlConfiguration read(JavaPlugin plugin, String name) {
