@@ -30,6 +30,8 @@ final class MannequinFactory {
             m.customName(type.name());
             m.setCustomNameVisible(true);
 
+            m.setDescription(type.description());
+
             NpcType.Skin skin = type.skin();
             if (skin != null) {
                 ProfileProperty texture = new ProfileProperty("textures", skin.value(), skin.signature());

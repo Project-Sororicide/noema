@@ -58,6 +58,7 @@ public record NpcConfig(Map<String, NpcType> types, int passiveChunkRadius, int 
                 if (s == null) continue;
 
                 Component name = MM.deserialize(s.getString("name", id));
+                Component description = MM.deserialize(s.getString("description", ""));
 
                 String skinId = s.getString("skin");
                 Skin skin = null;
@@ -102,7 +103,7 @@ public record NpcConfig(Map<String, NpcType> types, int passiveChunkRadius, int 
                     maxLookRange = Math.max(maxLookRange, range);
                 }
 
-                types.put(id, new NpcType(id, name, skinId, skin, Math.max(0, cooldown),
+                types.put(id, new NpcType(id, name, description, skinId, skin, Math.max(0, cooldown),
                         invulnerable, immovable, interact, passive, look));
             }
         }

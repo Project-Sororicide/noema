@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public record NpcType(
         String id,
         Component name,
+        Component description,  // nullable
         String skinId,
         Skin skin,              // nullable (unknown/missing skin id)
         int cooldownTicks,

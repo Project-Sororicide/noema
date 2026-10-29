@@ -9,7 +9,8 @@ defaults:
 
 types:
   blacksmith:
-    name: "<gold>Brom the Smith"
+    name: "<gold>Brom"
+    description: "<white>Armorsmith"
     skin: smith
     on-interact:
       event: "shop"              # exposed via NpcInteractEvent#getAction()
