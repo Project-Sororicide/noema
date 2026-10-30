@@ -1,4 +1,4 @@
-name: Noema
+name: ${project.name}
 version: ${project.version}
 main: dev.pupwired.noema.NoemaPlugin
 api-version: '26.3'
