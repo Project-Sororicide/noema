@@ -29,6 +29,12 @@
             <version>26.3.build.230-stable</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>dev.pupwired</groupId>
+            <artifactId>lucky-lib</artifactId>
+            <version>[1.0.0,)</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
